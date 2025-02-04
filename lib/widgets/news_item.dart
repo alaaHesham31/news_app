@@ -66,6 +66,5 @@ class NewsItem extends StatelessWidget {
         ),
       ),
     );
-    ;
   }
 }
