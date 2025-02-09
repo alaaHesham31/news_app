@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:news_app/screens/home_screen.dart';
 import 'package:news_app/screens/sources_section.dart';
 
+import 'models/news_data_response.dart';
+
 void main() {
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -14,12 +17,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      routes: {
-        HomeScreen.routeName : (context) => HomeScreen(),
-        SourcesSection.routeName : (context) => SourcesSection(),
-
-      },
       initialRoute: HomeScreen.routeName,
+      onGenerateRoute: (settings) {
+        if (settings.name == SourcesSection.routeName) {
+          final article = settings.arguments as Articles;
+          return MaterialPageRoute(
+            builder: (context) => SourcesSection(article: article),
+          );
+        }
+        return null; // Default case
+      },
+      routes: {
+        HomeScreen.routeName: (context) => HomeScreen(),
+      },
     );
   }
 }

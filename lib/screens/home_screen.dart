@@ -3,6 +3,8 @@ import 'package:news_app/screens/sources_section.dart';
 import 'package:news_app/widgets/app_drawer.dart';
 import 'package:news_app/widgets/positioned_button_widget.dart';
 
+import '../models/news_data_response.dart';
+
 class HomeScreen extends StatelessWidget {
   static const String routeName = "home";
   final List<String> categories = [
@@ -77,10 +79,23 @@ class HomeScreen extends StatelessWidget {
                           width: double.infinity,
                         ),
                       ),
-                      PositionedButton(isRight: index.isEven, onTap: (){
-                        Navigator.pushNamed(context, SourcesSection.routeName);
+                  PositionedButton(
+                  isRight: index.isEven,
+                  onTap: () {
+                  final dummyArticle = Articles(
+                  title: 'Breaking News: ${categories[index]}',
+                  description: 'This is a sample description for ${categories[index]} news.',
+                  urlToImage: 'assets/images/${categories[index]}.png',
+                  );
 
-                      })
+                  Navigator.pushNamed(
+                  context,
+                  SourcesSection.routeName,
+                  arguments: dummyArticle, // Pass the article here
+                  );
+                  },
+                  )
+
                     ],
                   );
                 },
