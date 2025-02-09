@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppDrawer extends StatefulWidget {
-  const AppDrawer({super.key});
+  Function onTap;
+   AppDrawer({required this.onTap,super.key});
 
 
   @override
@@ -45,15 +46,31 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
             ),
           ),
-          ListTile(
-            leading: Image(image: AssetImage('assets/images/home icon.png',),),
-            title: Text(
-              'Go to Home',
-              style: TextStyle(
-                fontSize: 20,
-                color: Color(0xFFFFFFFF),
-                fontWeight: FontWeight.w500,
-                fontFamily: 'Inter',
+          InkWell(
+            onTap: () {
+              widget.onTap();
+            },
+            child: ListTile(
+              leading: Icon(
+                Icons.home_outlined,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Go to Home',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Color(0xFFFFFFFF),
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Inter',
+                ),
+              ),
+              subtitle: Text(
+                "Click Here",
+                style: TextStyle(color: Colors.white),
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.white,
               ),
             ),
           ),

@@ -1,11 +1,14 @@
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/api_manager.dart';
 import 'package:news_app/models/news_data_response.dart';
 import 'package:news_app/screens/search_screen.dart';
 import 'package:news_app/widgets/news_item.dart';
 
+import '../bloc/cubit.dart';
+import '../bloc/states.dart';
 import '../models/source_response.dart';
 import 'news_item_details.dart';
 
@@ -13,7 +16,6 @@ class SourcesSection extends StatefulWidget {
   static const String routeName = "SourcesSection";
   final Articles article;
   List<Sources> sources = [];
-
 
   SourcesSection({super.key, required this.article});
 
@@ -26,7 +28,6 @@ class _SourcesSectionState extends State<SourcesSection> {
   Articles? selectedArticle;
   List<Sources> sources = []; // Store sources data
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,10 +35,20 @@ class _SourcesSectionState extends State<SourcesSection> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF171717),
         title: const Text(
-          'Home',
-          style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w500),
+          'General',
+          style: TextStyle(
+              fontSize: 20, color: Colors.white, fontWeight: FontWeight.w500),
         ),
         centerTitle: true,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: Icon(Icons.menu, color: Colors.white),
+            // White drawer icon
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () {
@@ -56,7 +67,6 @@ class _SourcesSectionState extends State<SourcesSection> {
           )
         ],
       ),
-
       body: GestureDetector(
         onTap: () {
           setState(() {
@@ -65,26 +75,22 @@ class _SourcesSectionState extends State<SourcesSection> {
         },
         child: Stack(
           children: [
-            FutureBuilder(
-              future: ApiManager.getResources(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      "Error: ${snapshot.error}",
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  );
+            BlocProvider(
+              create: (context) => HomeCubit(),
+              child:
+                  BlocBuilder<HomeCubit, HomeStates>(builder: (context, state) {
+                if (state is GetSourcesLoadingState) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (state is GetSourcesErrorState) {
+                  return Center(child: Text('Something went Wrong'));
                 } else {
-                  List<Sources> data = snapshot.data?.sources ?? [];
-                  sources = data;
+                  var bloc = BlocProvider.of<HomeCubit>(context);
+                  var list = bloc.sourceResponse?.sources ?? [];
                   return Column(
                     children: [
                       DefaultTabController(
                         initialIndex: selectedIndex,
-                        length: data.length,
+                        length: list.length,
                         child: TabBar(
                           onTap: (value) {
                             setState(() {
@@ -95,7 +101,7 @@ class _SourcesSectionState extends State<SourcesSection> {
                           labelColor: Colors.white,
                           unselectedLabelColor: Colors.white70,
                           indicatorColor: Colors.white,
-                          tabs: data
+                          tabs: list
                               .map((element) => Tab(text: element.name))
                               .toList(),
                         ),
@@ -105,7 +111,7 @@ class _SourcesSectionState extends State<SourcesSection> {
                           padding: const EdgeInsets.all(16.0),
                           child: FutureBuilder<NewsDataResponse>(
                             future: ApiManager.getNewsData(
-                                data[selectedIndex].id ?? ''),
+                                list[selectedIndex].id ?? ''),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
@@ -148,7 +154,7 @@ class _SourcesSectionState extends State<SourcesSection> {
                     ],
                   );
                 }
-              },
+              }),
             ),
             if (selectedArticle != null)
               GestureDetector(

@@ -5,8 +5,16 @@ import 'package:news_app/widgets/positioned_button_widget.dart';
 
 import '../models/news_data_response.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static const String routeName = "home";
+
+  HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final List<String> categories = [
     'general',
     'business',
@@ -17,13 +25,13 @@ class HomeScreen extends StatelessWidget {
     'entertainment'
   ];
 
-  HomeScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       backgroundColor: Color(0xFF171717),
-      drawer:  AppDrawer(),
+
+
       appBar: AppBar(
         backgroundColor: Color(0xFF171717),
 
@@ -36,6 +44,14 @@ class HomeScreen extends StatelessWidget {
               fontFamily: 'Inter'),
         ),
         centerTitle: true,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: Icon(Icons.menu, color: Colors.white), // White drawer icon
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+        ),
         actions: [
           Icon(
             Icons.search,
@@ -106,6 +122,17 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-  
+  String? categoryName = null;
+
+  onDrawerClicked() {
+    Navigator.pop(context);
+    categoryName = null;
+    setState(() {});
+  }
+
+  onCategoryClicked(category) {
+    categoryName = category;
+    setState(() {});
+  }
 }
 
